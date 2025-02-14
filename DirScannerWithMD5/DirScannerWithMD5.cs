@@ -6,10 +6,10 @@ class DirScannerWithMD5
     static void Main(string[] args)
     {
         string pathToScan = "";
+        string outpuFile = "";
 
-        ScanDir(pathToScan, "*.*");
-
-
+        List<File> filesData = ScanDir(pathToScan, "*.*");
+        WriteFileDataToFile(filesData, outpuFile);
     }
 
     static List<File> ScanDir(string dirForScan, string searchPattern)
@@ -65,6 +65,15 @@ class DirScannerWithMD5
         using var md5 = MD5.Create();
         using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return BitConverter.ToString(md5.ComputeHash(fileStream)).Replace("-", "");
+    }
+
+    public static void WriteFileDataToFile(List<File> filesData, string outputFile)
+    {
+        using StreamWriter writer = new StreamWriter(outputFile);
+        foreach (var file in filesData)
+        {
+            writer.WriteLine($"{file.rel_path} {file.file_size} {file.hash_md5}");
+        }
     }
 
     public class File
